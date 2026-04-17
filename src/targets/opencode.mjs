@@ -53,21 +53,30 @@ export async function emitOpenCode(src, outDir) {
     written.push(p);
   }
 
-  if (Object.keys(src.mcp.servers).length > 0) {
-    const mcp = {};
-    for (const [name, def] of Object.entries(src.mcp.servers)) {
-      const command = [def.command, ...(def.args ?? [])];
-      mcp[name] = {
-        type: 'local',
-        command,
-        environment: def.env ?? {},
-      };
+  const opencodeExtras = src.config?.targets?.opencode ?? {};
+  const hasMcp = Object.keys(src.mcp.servers).length > 0;
+  const hasExtras = Object.keys(opencodeExtras).length > 0;
+  if (hasMcp || hasExtras) {
+    const output = {
+      $schema: 'https://opencode.ai/config.json',
+    };
+    if (hasMcp) {
+      const mcp = {};
+      for (const [name, def] of Object.entries(src.mcp.servers)) {
+        const command = [def.command, ...(def.args ?? [])];
+        mcp[name] = {
+          type: 'local',
+          command,
+          environment: def.env ?? {},
+        };
+      }
+      output.mcp = mcp;
+    }
+    for (const [k, v] of Object.entries(opencodeExtras)) {
+      output[k] = v;
     }
     const p = path.join(outDir, 'opencode.json');
-    await writeJson(p, {
-      $schema: 'https://opencode.ai/config.json',
-      mcp,
-    });
+    await writeJson(p, output);
     written.push(p);
   }
 

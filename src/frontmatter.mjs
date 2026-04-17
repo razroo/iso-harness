@@ -18,6 +18,6 @@ export function parse(raw) {
 export function stringify({ data, body }) {
   const keys = Object.keys(data ?? {});
   if (keys.length === 0) return body;
-  const fm = YAML.stringify(data).trimEnd();
+  const fm = YAML.stringify(data, { lineWidth: 0 }).trimEnd();
   return `---\n${fm}\n---\n\n${body.replace(/^\s+/, '')}`;
 }

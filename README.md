@@ -109,16 +109,31 @@ Slash-command body goes here.
 
 ## Escape hatches
 
-The abstraction is only as good as its lowest common denominator. Two
+The abstraction is only as good as its lowest common denominator. Three
 explicit hatches keep harness-specific features possible:
 
-1. **Per-target frontmatter under `targets:`.** Anything you put under
-   `targets.<name>` is merged into that harness's emitted frontmatter
-   verbatim. Use this for OpenCode `temperature`, Claude Code
-   `allowed-tools`, etc.
+1. **Per-target frontmatter under `targets:`** (agents & commands).
+   Anything under `targets.<name>` is merged into that harness's emitted
+   frontmatter verbatim. Use this for OpenCode `temperature` /
+   `fallback_models`, Claude Code `allowed-tools`, etc.
 2. **`targets.<name>: skip`** omits the item from a specific target —
    useful when a subagent only makes sense in harnesses that support
    subagents.
+3. **`iso/config.json` with `targets.<name>: { … }`** for top-level
+   harness config (not per-item). Keys under `targets.opencode` are
+   merged into the generated `opencode.json` — use this for OpenCode's
+   top-level `instructions: [...]` array, for example.
+
+```json
+// iso/config.json
+{
+  "targets": {
+    "opencode": {
+      "instructions": ["templates/states.yml"]
+    }
+  }
+}
+```
 
 For features with no cross-harness analogue (Claude Code hooks, OpenCode
 `fallback_models`), edit the generated file or add a separate post-build
