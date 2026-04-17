@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { stringify as toFrontmatter } from '../frontmatter.mjs';
 import { writeFile, writeJson } from '../fs-utils.mjs';
-import { targetOverride } from '../source.mjs';
+import { targetOverride, resolveMcpServer } from '../source.mjs';
 
 function claudeTools(tools) {
   if (!tools) return undefined;
@@ -52,7 +52,8 @@ export async function emitClaude(src, outDir) {
 
   if (Object.keys(src.mcp.servers).length > 0) {
     const mcpServers = {};
-    for (const [name, def] of Object.entries(src.mcp.servers)) {
+    for (const [name, rawDef] of Object.entries(src.mcp.servers)) {
+      const def = resolveMcpServer(rawDef, 'claude');
       const entry = { command: def.command };
       if (def.args) entry.args = def.args;
       if (def.env) entry.env = def.env;

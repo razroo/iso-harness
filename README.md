@@ -65,6 +65,33 @@ OpenCode wants `type: "local"` and `command` as an array).
 }
 ```
 
+**Per-target MCP overrides.** A server can ship different `env`/`command`/
+`args` per harness — useful when the same MCP behaves differently under
+parallel subagents vs. a single-session IDE (e.g. `DISABLE_HTTP` for
+OpenCode vs. a pinned `PORT` for Cursor):
+
+```json
+{
+  "servers": {
+    "gmail": {
+      "command": "npx",
+      "args": ["-y", "@razroo/gmail-mcp"],
+      "env": { "DISABLE_HTTP": "true" },
+      "targets": {
+        "cursor": {
+          "env": { "PORT": "3847" }
+        }
+      }
+    }
+  }
+}
+```
+
+Override keys **replace** the corresponding base keys wholesale (no deep
+merge). In this example, Cursor's generated `mcp.json` gets
+`env: {PORT: "3847"}` only; the other three harnesses get
+`env: {DISABLE_HTTP: "true"}`.
+
 ### Agent frontmatter
 
 ```yaml

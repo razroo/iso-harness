@@ -94,3 +94,17 @@ export function targetOverride(item, target) {
   if (!t || typeof t !== 'object') return { skip: false, override: {} };
   return { skip: false, override: t };
 }
+
+// Resolves a single MCP server definition for a specific target, applying
+// any `targets.<name>` shallow override on top of the shared config. Keys
+// in the override replace keys in the base (including `env` — replace
+// semantics, not merge — so `{env: {DISABLE_HTTP: "true"}}` base plus
+// `{env: {PORT: "3847"}}` cursor-override yields `{env: {PORT: "3847"}}`,
+// not both. This matches the common case where shared and per-target env
+// vars are *contradictory*, not additive.
+export function resolveMcpServer(def, target) {
+  const { targets = {}, ...base } = def;
+  const override = targets[target];
+  if (!override || typeof override !== 'object') return base;
+  return { ...base, ...override };
+}

@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { stringify as toFrontmatter } from '../frontmatter.mjs';
 import { writeFile, writeJson } from '../fs-utils.mjs';
-import { targetOverride } from '../source.mjs';
+import { targetOverride, resolveMcpServer } from '../source.mjs';
 
 export async function emitOpenCode(src, outDir) {
   const written = [];
@@ -62,7 +62,8 @@ export async function emitOpenCode(src, outDir) {
     };
     if (hasMcp) {
       const mcp = {};
-      for (const [name, def] of Object.entries(src.mcp.servers)) {
+      for (const [name, rawDef] of Object.entries(src.mcp.servers)) {
+        const def = resolveMcpServer(rawDef, 'opencode');
         const command = [def.command, ...(def.args ?? [])];
         mcp[name] = {
           type: 'local',
