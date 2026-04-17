@@ -1,0 +1,23 @@
+{
+  "name": "iso-harness",
+  "version": "0.1.0",
+  "description": "One config for every coding agent — Cursor, Claude Code, Codex, OpenCode.",
+  "type": "module",
+  "bin": {
+    "iso-harness": "./bin/iso-harness.mjs"
+  },
+  "scripts": {
+    "build:example": "node ./bin/iso-harness.mjs build --source examples/minimal/iso --out examples/minimal/out",
+    "smoke": "node ./bin/iso-harness.mjs build --source examples/minimal/iso --out /tmp/iso-harness-smoke"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "yaml": "^2.6.0"
+  }
+}
