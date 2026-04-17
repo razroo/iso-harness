@@ -124,6 +124,43 @@ For features with no cross-harness analogue (Claude Code hooks, OpenCode
 `fallback_models`), edit the generated file or add a separate post-build
 step — don't force them into the neutral source.
 
+## Releasing
+
+Releases are cut via a GitHub Release, which triggers
+`.github/workflows/release.yml` to publish `@razroo/iso-harness` to npm
+with provenance.
+
+Prerequisites (one-time):
+
+1. Repo secret **`NPM_TOKEN`** — an npm automation token with publish
+   rights on the `@razroo` scope. Set at
+   `https://github.com/razroo/iso-harness/settings/secrets/actions`.
+2. Npm scope `@razroo` must exist and the token must have access.
+
+Cutting a release:
+
+```bash
+# 1. Bump version, commit, push. CI (Quality checks) must pass on the
+#    pushed commit — the release workflow refuses to publish otherwise.
+npm version patch                     # or minor/major — bumps package.json + tags
+git push && git push --tags
+
+# 2. Create the GitHub Release off the tag. This fires release.yml.
+gh release create "v$(node -p 'require(\"./package.json\").version')" \
+  --generate-notes
+```
+
+The release workflow will:
+
+1. Wait for the **Quality checks** run on the release commit to complete
+   (up to 30 min). Refuses to publish on red.
+2. Verify `package.json` version matches the tag via
+   `scripts/release/check-source.mjs`.
+3. `npm publish --provenance --access public`.
+
+If the publish step fails (e.g. token, 2FA, name conflict), fix the
+cause, delete the GitHub release + tag, and re-cut — do not amend.
+
 ## Status
 
 v0.1 — instructions, agents, commands, MCP. Hooks, permissions, and
