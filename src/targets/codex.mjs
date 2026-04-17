@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { writeFile } from '../fs-utils.mjs';
-import { resolveMcpServer } from '../source.mjs';
 
 function tomlString(v) {
   return `"${String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
@@ -39,11 +38,7 @@ export async function emitCodex(src, outDir) {
   }
 
   if (Object.keys(src.mcp.servers).length > 0) {
-    const resolved = {};
-    for (const [name, rawDef] of Object.entries(src.mcp.servers)) {
-      resolved[name] = resolveMcpServer(rawDef, 'codex');
-    }
-    const body = renderMcpToml(resolved);
+    const body = renderMcpToml(src.mcp.servers);
     const p = path.join(outDir, '.codex', 'config.toml');
     await writeFile(p, body);
     written.push(p);
