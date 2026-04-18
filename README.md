@@ -1,3 +1,16 @@
+# ARCHIVED — moved to [razroo/iso](https://github.com/razroo/iso)
+
+> [!IMPORTANT]
+> **This repository has been archived.** Development continues in the
+> [razroo/iso](https://github.com/razroo/iso) monorepo at
+> [`packages/iso-harness`](https://github.com/razroo/iso/tree/main/packages/iso-harness).
+>
+> The published npm package **`@razroo/iso-harness`** is unaffected —
+> install and usage stay exactly the same. File issues and PRs against
+> [razroo/iso](https://github.com/razroo/iso/issues).
+
+---
+
 # iso-harness
 
 **One config for every coding agent — Cursor, Claude Code, Codex, OpenCode.**
