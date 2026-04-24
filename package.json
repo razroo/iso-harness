@@ -2,6 +2,7 @@
   "name": "@razroo/iso-harness",
   "version": "0.1.3",
   "description": "One config for every coding agent — Cursor, Claude Code, Codex, OpenCode.",
+  "private": true,
   "type": "module",
   "bin": {
     "iso-harness": "./bin/iso-harness.mjs"
@@ -10,7 +11,7 @@
     "build:example": "node ./bin/iso-harness.mjs build --source examples/minimal/iso --out examples/minimal/out",
     "smoke": "node ./bin/iso-harness.mjs build --source examples/minimal/iso --out /tmp/iso-harness-smoke",
     "release:check-source": "node ./scripts/release/check-source.mjs",
-    "prepublishOnly": "npm run smoke"
+    "prepublishOnly": "node -e \"console.error('This repository is archived. Publish @razroo/iso-harness from github.com/razroo/iso packages/iso-harness instead.'); process.exit(1)\""
   },
   "files": [
     "bin",

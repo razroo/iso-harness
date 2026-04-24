@@ -1,70 +1,18 @@
-name: Release to npm
+name: Archived release blocker
 
 on:
   release:
     types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  publish:
+  archived:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
-      - uses: actions/checkout@v6
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
-
-      - name: Set version from release tag
+      - name: Stop archived-repo publish
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: Verify Quality checks passed for release commit
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          SHA=$(git rev-parse HEAD)
-          echo "Verifying quality check-run for $SHA"
-          # Wait for the push-triggered Quality workflow's `quality` check-run
-          # on this exact commit to appear and finish. Refuse to publish on
-          # anything other than success. Polling is required because
-          # `release: published` often fires within the same second as the
-          # push, before the push-triggered workflow has even registered its
-          # check-run.
-          DEADLINE=$(( $(date +%s) + 1800 ))  # 30 min
-          STATUS=""
-          CONCLUSION=""
-          while [ "$(date +%s)" -lt "$DEADLINE" ]; do
-            read -r STATUS CONCLUSION <<<"$(gh api "repos/${{ github.repository }}/commits/$SHA/check-runs" \
-              --jq '[.check_runs[] | select(.name == "quality")] | sort_by(.started_at) | last | "\(.status // "missing") \(.conclusion // "null")"')"
-            echo "quality check-run: status=$STATUS conclusion=$CONCLUSION"
-            if [ "$STATUS" = "completed" ]; then
-              break
-            fi
-            sleep 15
-          done
-          if [ "$STATUS" != "completed" ]; then
-            echo "::error::Quality checks for $SHA never completed within 30min (last status: $STATUS)."
-            exit 1
-          fi
-          if [ "$CONCLUSION" != "success" ]; then
-            echo "::error::Quality checks for $SHA did not succeed (conclusion: $CONCLUSION). Fix before re-releasing."
-            exit 1
-          fi
-          echo "Quality checks succeeded for $SHA"
-
-      - name: Verify package.json version matches release tag
-        run: npm run release:check-source -- "$VERSION"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Publish to npm (with provenance)
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          echo "::error::This repository is archived. Publish @razroo/iso-harness from github.com/razroo/iso packages/iso-harness instead."
+          exit 1
